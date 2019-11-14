@@ -5,7 +5,7 @@ import observer.Subject
 
 class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = Difficulty.Easy) extends Subject {
 
-  def openField(x: Int, y: Int): (Boolean, Boolean) = {
+  def selectField(x: Int, y: Int, isFlag: Boolean): (Boolean, Boolean) = {
     fireGameChangeEvent(null)
     (false, false)
   }
