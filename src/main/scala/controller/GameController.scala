@@ -4,7 +4,7 @@ import model.GameField
 
 class GameController(gameField: GameField) {
 
-  def selectField(x: Int, y: Int, isFlag: Boolean) : (Boolean, Boolean) = {
-    gameField.selectField(x, y, isFlag)
+  def openField(coordinates: (Int, Int), isFlag: Boolean) : (Boolean, Boolean) = {
+    gameField.selectField(coordinates._1, coordinates._2, isFlag)
   }
 }

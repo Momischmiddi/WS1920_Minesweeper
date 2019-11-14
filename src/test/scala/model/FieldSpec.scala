@@ -6,7 +6,7 @@ import traits.TestBase
 
 class FieldSpec extends WordSpec with TestBase {
 
-  val(creator, bombs, gameField) = createTestObjects(Difficulty.Easy, false)
+  val(creator, bombs, gameField, _) = createTestObjects(Difficulty.Easy, false)
 
   "A field" should {
     "should contain the correct amount of surrounding bombs" in {
