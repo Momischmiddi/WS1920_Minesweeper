@@ -1,28 +1,26 @@
 package model
 
-import model.Difficulty.Difficulty
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
+import traits.TestBase
 
-class GameFieldSpec extends WordSpec  {
+class GameFieldSpec extends WordSpec  with TestBase {
 
-  def createTestField(difficulty: Difficulty): GameField = {
-    val creator = new GameFieldCreator
-    val bombLocations = creator.createRandomBombLocations(difficulty)
-    creator.createGameField(difficulty, bombLocations)
-  }
+  val(_, _, easyField) = createTestObjects(Difficulty.Easy, false)
+  val(_, _, mediumField) = createTestObjects(Difficulty.Medium, false)
+  val(_, _, hardField) = createTestObjects(Difficulty.Hard, false)
 
   "A game-field" should {
     "should contain the correct amount of fields" in {
-      createTestField(Difficulty.Easy).fields.flatten.length should be(Difficulty.Easy._1 * Difficulty.Easy._2)
-      createTestField(Difficulty.Medium).fields.flatten.length should be(Difficulty.Medium._1 * Difficulty.Medium._2)
-      createTestField(Difficulty.Hard).fields.flatten.length should be(Difficulty.Hard._1 * Difficulty.Hard._2)
+      easyField.fields.flatten.length should be(Difficulty.Easy._1 * Difficulty.Easy._2)
+      mediumField.fields.flatten.length should be(Difficulty.Medium._1 * Difficulty.Medium._2)
+      hardField.fields.flatten.length should be(Difficulty.Hard._1 * Difficulty.Hard._2)
     }
 
     "should contain the correct amount of bombs" in {
-      createTestField(Difficulty.Easy).fields.flatten.count(_.isBomb) should be(Difficulty.Easy._3)
-      createTestField(Difficulty.Medium).fields.flatten.count(_.isBomb) should be(Difficulty.Medium._3)
-      createTestField(Difficulty.Hard).fields.flatten.count(_.isBomb) should be(Difficulty.Hard._3)
+      easyField.fields.flatten.count(_.isBomb) should be(Difficulty.Easy._3)
+      mediumField.fields.flatten.count(_.isBomb) should be(Difficulty.Medium._3)
+      hardField.fields.flatten.count(_.isBomb) should be(Difficulty.Hard._3)
     }
   }
 }
