@@ -7,13 +7,12 @@ import scala.util.Random
 class GameFieldCreator {
 
   def createGameField(difficulty: Difficulty, bombLocations: List[(Int, Int)]): GameField = {
-    val fields: Array[Array[Field]] = Array.ofDim[Field](difficulty._1, difficulty._2)
-
-    for (i <- 0 until difficulty._1; j <- 0 until difficulty._2) {
-      fields(i)(j) = new Field(j, i, bombLocations contains (j, i))
-    }
-
-    new GameField(fields, difficulty)
+    new GameField(
+      (for {i <- 0 until difficulty._1; j <- 0 until difficulty._2 } yield new Field(j, i, bombLocations contains (j, i)))
+        .grouped(difficulty._1) // Doesnt matter if X or Y, since its quadratic
+        .toArray
+        .map(_.toArray),
+      difficulty)
   }
 
   def createRandomBombLocations(difficulty: Difficulty): List[(Int, Int)] = {
