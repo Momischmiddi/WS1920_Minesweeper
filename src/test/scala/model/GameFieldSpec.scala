@@ -6,9 +6,9 @@ import traits.TestBase
 
 class GameFieldSpec extends WordSpec  with TestBase {
 
-  val(_, _, easyField) = createTestObjects(Difficulty.Easy, false)
-  val(_, _, mediumField) = createTestObjects(Difficulty.Medium, false)
-  val(_, _, hardField) = createTestObjects(Difficulty.Hard, false)
+  val(_, _, easyField, _) = createTestObjects(Difficulty.Easy, false)
+  val(_, _, mediumField, _) = createTestObjects(Difficulty.Medium, false)
+  val(_, _, hardField, _) = createTestObjects(Difficulty.Hard, false)
 
   "A game-field" should {
     "should contain the correct amount of fields" in {
