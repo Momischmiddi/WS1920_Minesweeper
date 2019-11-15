@@ -6,8 +6,10 @@ trait Subject {
 
   private var observers: List[Observer] = Nil
 
-  def addGameChangeListener(observer: Observer) = observers = observer :: observers
-  def removeGameChangeListener(observer: Observer) = observers = observers diff List(observer)
-  def fireGameChangeEvent(fields: Array[Array[Field]]) = observers.foreach(_.receiveUpdate(fields))
+  def addGameListener(observer: Observer): Unit = observers = observer :: observers
+  def removeGameListener(observer: Observer): Unit= observers = observers diff List(observer)
+  def removeAllGameListeners(): Unit = observers = observers.diff(observers)
+  def fireFieldChangeEvent(fields: Array[Array[Field]]): Unit = observers.foreach(_.receiveGameFieldUpdate(fields))
+  def fireGameEndEvent(gameWon: Boolean): Unit= observers.foreach(_.receiveGameEndUpdate(gameWon))
 
 }
