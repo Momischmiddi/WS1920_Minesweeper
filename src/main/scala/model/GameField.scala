@@ -4,13 +4,14 @@ import model.Difficulty.Difficulty
 import observer.Subject
 
 class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = Difficulty.Easy) extends Subject {
+
   def selectField(x: Int, y: Int, flagField: Boolean): Boolean = {
     val selectedField = getFieldFromGameField(x, y)
 
     if(ignoreClick(selectedField, flagField)) {
       false
     } else {
-      val newField = new Field(x, y, selectedField.isBomb, flagField, true, getSurroundingBombAmount(selectedField))
+      val newField = new Field(x, y, selectedField.isBomb, flagField, !flagField, getSurroundingBombAmount(selectedField))
       fields(y)(x) = newField
 
       if(isGameWon) {
