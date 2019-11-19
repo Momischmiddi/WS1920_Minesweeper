@@ -10,34 +10,28 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
 
   var(_, _, gameField, gameController) = createTestObjects(Difficulty.Easy, true)
 
-  var correctEventFired: Boolean = false
-  var currentTest = ""
-
   override def afterEach(): Unit = {
     gameField.removeAllGameListeners()
-    if(!correctEventFired) {
-      System.err.println("Failed test: " + currentTest)
-    }
-    correctEventFired should be(true)
   }
 
   override def beforeEach(): Unit = {
     val(_, _, gameField_, gameController_) = createTestObjects(Difficulty.Easy, true)
     gameField = gameField_
     gameController = gameController_
-
-    correctEventFired = false
   }
 
   "A game" should {
     "Should be over and won, if all non-bomb-fields have been opened" in {
+      var evtCounter = 0
       val observer = new Observer {
-        currentTest = "Should be over and won, if all non-bomb-fields have been opened"
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {}
-
         override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
-          correctEventFired = true
-          gameWon should be(true)
+          if(evtCounter == 0) {
+            gameWon should be(true)
+          } else {
+            gameWon should be(false)
+          }
+          evtCounter = evtCounter + 1
         }
       }
 
@@ -51,30 +45,41 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       gameController.selectField((1, 8), false)
       gameController.selectField((0, 6), false)
       gameController.selectField((5, 4), false)
+
+      observer.receiveGameEndUpdate(false)
     }
 
     "Should be over and lost, if a bomb-field has been opened" in {
-      currentTest = "Should be over and lost, if a bomb-field has been opened"
+      var evtCounter = 0
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {}
-
         override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
-          correctEventFired = true
-          gameWon should be(false)
+          if(evtCounter == 0) {
+            gameWon should be(false)
+          } else {
+            gameWon should be(true)
+          }
+          evtCounter = evtCounter + 1
         }
       }
 
       gameField.addGameListener(observer)
       gameController.selectField((0, 4), false)
+      observer.receiveGameEndUpdate(true)
     }
 
     "Should not be over, if there are non-bomb-fields left on the game-field and a non-bomb-field was opened" in {
-      currentTest = "Should not be over, if there are non-bomb-fields left on the game-field and a non-bomb-field was opened"
+      var evtCounter = 0
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
-          correctEventFired = true
-          fields(4)(1).surroundingBombs should be(3)
-          fields(4)(1).isOpened should be(true)
+          if(evtCounter == 0) {
+            fields(4)(1).surroundingBombs should be(3)
+            fields(4)(1).isOpened should be(true)
+          } else {
+            fields should equal(null)
+          }
+
+          evtCounter = evtCounter + 1
         }
 
         override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
@@ -84,15 +89,21 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
 
       gameField.addGameListener(observer)
       gameController.selectField((1, 4), false)
+      observer.receiveGameFieldUpdate(null)
     }
 
     "Should not be over, if a bomb was flagged" in {
-      currentTest = "Should not be over, if a bomb was flagged"
+      var evtCounter = 0
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
-          correctEventFired = true
-          fields(4)(0).isOpened should be(false)
-          fields(4)(0).isFlagged should be(true)
+          if(evtCounter == 0) {
+            fields(4)(0).isOpened should be(false)
+            fields(4)(0).isFlagged should be(true)
+          } else {
+            fields should equal(null)
+          }
+
+          evtCounter = evtCounter + 1
         }
 
         override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
@@ -102,15 +113,13 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
 
       gameField.addGameListener(observer)
       gameController.selectField((0, 4), true)
+      observer.receiveGameFieldUpdate(null)
     }
 
     "Should not be over, if flagged bomb was opened" in {
-      currentTest = "Should not be over, if flag was opened"
       gameController.selectField((0, 4), true)
-
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
-          correctEventFired = true
         }
 
         override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
