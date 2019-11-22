@@ -1,5 +1,11 @@
+import view.tui.MswTUI
+
 object Main {
   def main(args: Array[String]): Unit = {
-    println("Game started")
+//    val mswGUI = new MswGUI
+//    mswGUI.visible = true
+
+    val mswTUI = new MswTUI
+    mswTUI.startGame()
   }
 }

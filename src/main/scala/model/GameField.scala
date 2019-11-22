@@ -5,6 +5,8 @@ import observer.Subject
 
 class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = Difficulty.Easy) extends Subject {
 
+  def fireStartField(): Unit = {fireFieldChangeEvent(fields)}
+
   def selectField(x: Int, y: Int, flagField: Boolean): Boolean = {
     val selectedField = getFieldFromGameField(x, y)
 
