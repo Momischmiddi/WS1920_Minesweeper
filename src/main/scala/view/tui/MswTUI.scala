@@ -53,37 +53,48 @@ class MswTUI extends Observer {
     }
   }
 
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = redrawTUI(fields)
+  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = render(createTUI(fields))
 
-  private def redrawTUI(fields: Array[Array[Field]]): Unit =
+  def render(string: String): Unit = {
+    print(string);
+  }
+
+  private def createTUI(fields: Array[Array[Field]]): String =
   {
+    val field: StringBuilder = new StringBuilder
     for (v <- fields) {
-      print("\n")
+      field.append("\n")
       for (h <- v) {
-        if (h.isFlagged) print(flagUnicode)
-        else if (h.isOpened && h.surroundingBombs == 0) print(noSurroundingBombsUnicode)
-        else if (h.isOpened && h.isBomb) printGameOver()
-        else if (h.isOpened && h.surroundingBombs > 0) print((numberPrefixUnicode+h.surroundingBombs-1).toChar.toString)
-        else print(squareUnicode)
+        if (h.isFlagged) field.append(flagUnicode)
+        else if (h.isOpened && h.surroundingBombs == 0) field.append(noSurroundingBombsUnicode)
+        else if (h.isOpened && h.isBomb) {field.clear(); field.append(createGameOver())}
+        else if (h.isOpened && h.surroundingBombs > 0) field.append((numberPrefixUnicode+h.surroundingBombs-1).toChar.toString)
+        else field.append(squareUnicode)
       }
     }
+    return field.toString()
   }
 
-  override def receiveGameEndUpdate(gameWon: Boolean): Unit = if(gameWon) printGameWon() else printGameOver()
+  override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
+    if(gameWon) render(createGameWon()) else render(createGameOver())
+    System.exit(0)
+  }
 
-  private def printGameWon(): Unit =
+  private def createGameWon(): String =
   {
-    println("----------------------------------------------------")
-    println("**************!Congratulations!*********************")
-    println("*****************!You won!**************************")
-    println("----------------------------------------------------")
-    System.exit(0)
+    val gameWon:StringBuilder = new StringBuilder
+    gameWon.append("----------------------------------------------------\n")
+    gameWon.append("**************!Congratulations!*********************\n")
+    gameWon.append("*****************!You won!**************************\n")
+    gameWon.append("----------------------------------------------------\n")
+    return gameWon.toString()
   }
 
-  private def printGameOver(): Unit = {
-    println("------------------------------------")
-    println("************!GAME OVER!*************")
-    println("------------------------------------")
-    System.exit(0)
+  private def createGameOver(): String = {
+    val gameOver:StringBuilder = new StringBuilder
+    gameOver.append("------------------------------------\n")
+    gameOver.append("************!GAME OVER!*************\n")
+    gameOver.append("------------------------------------\n")
+    return gameOver.toString()
   }
 }
