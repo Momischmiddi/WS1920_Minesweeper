@@ -13,7 +13,12 @@ class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = D
     if(ignoreClick(selectedField, flagField)) {
       false
     } else {
-      val newField = new Field(x, y, selectedField.isBomb, flagField, !flagField, getSurroundingBombAmount(selectedField))
+      val newField = if(selectedField.isFlagged && flagField) {
+        new Field(x, y, selectedField.isBomb, false, false, getSurroundingBombAmount(selectedField))
+      } else {
+        new Field(x, y, selectedField.isBomb, flagField , !flagField, getSurroundingBombAmount(selectedField))
+      }
+
       fields(y)(x) = newField
 
       if(isGameWon) {
@@ -51,6 +56,7 @@ class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = D
       // Recursively open all neighbours, which are no bombs and have no numbers on it.
       if(!neighbour.isBomb && !neighbour.isOpened && field.surroundingBombs < 1) {
         fields(y)(x) = new Field(x, y, false ,false, true, getSurroundingBombAmount(neighbour))
+
         openAllNeighbours(x, y, fields(y)(x).surroundingBombs > 0)
       }
     }

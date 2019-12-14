@@ -72,7 +72,8 @@ class MswTUI extends Observer {
         else field.append(squareUnicode)
       }
     }
-    return field.toString()
+
+    field.toString()
   }
 
   override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
@@ -87,7 +88,7 @@ class MswTUI extends Observer {
     gameWon.append("**************!Congratulations!*********************\n")
     gameWon.append("*****************!You won!**************************\n")
     gameWon.append("----------------------------------------------------\n")
-    return gameWon.toString()
+    gameWon.toString()
   }
 
   private def createGameOver(): String = {
@@ -95,6 +96,6 @@ class MswTUI extends Observer {
     gameOver.append("------------------------------------\n")
     gameOver.append("************!GAME OVER!*************\n")
     gameOver.append("------------------------------------\n")
-    return gameOver.toString()
+    gameOver.toString()
   }
 }

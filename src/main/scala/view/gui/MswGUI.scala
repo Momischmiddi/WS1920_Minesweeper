@@ -1,56 +1,40 @@
 package scala.view.gui
 
 import controller.GameController
-import model.{Difficulty, Field, GameFieldCreator}
+import javax.swing.ImageIcon
+import model.{Field, GameField}
 import observer.Observer
 
-import scala.swing.{Button, Dimension, FlowPanel, Frame, Label, MainFrame}
+import scala.swing.event.{ButtonClicked, MouseClicked}
+import scala.swing.{AbstractButton, Button, Dimension, GridPanel, Label, MainFrame}
 
-class MswGUI extends MainFrame with Observer{
+class MswGUI(controller: GameController, val gameField: GameField) extends MainFrame with Observer {
 
-    // Uni-codes for fancy TUI-prints
-    val bombUnicode: String = "\uD83D\uDCA3"
-    val squareUnicode: String = "\u2B1B"
-    val flagUnicode: String = "\u2690"
-    val numberPrefixUnicode: Int = 9312
-    val noSurroundingBombsUnicode: String = "\u25A1"
+  gameField.addGameListener(this)
+
+  var x = 9
+  var y = 9
 
   title = "Minesweeper"
-  preferredSize = new Dimension(400, 400)
-  contents = new FlowPanel {
-    contents += new Label("test123")
-    contents += new Label("test234")
-    contents += new Button("testButton")
-  }
 
-  def startGame(): Unit =
-  {
-    val creator = new GameFieldCreator
-    val randomBombs = creator.createRandomBombLocations(Difficulty.Easy)
-    val gameField = creator.createGameField(Difficulty.Easy, randomBombs)
+  contents = new GridPanel(9, 9) {
+    contents ++= (for {i <- 0 until x; j <- 0 until y } yield new Button {
+      icon = new ImageIcon("src/sprites/block.png")
+      preferredSize = new Dimension(40, 40)
 
-    gameField.addGameListener(this)
-
-    val controller = new GameController(gameField)
-
-    while(true)
-      controller.selectField((7, 5), false)
-  }
-
-
-  def redrawField(fields: Array[Array[Field]]): Unit =
-  {
-      for (v <- fields) {
-        print("\n")
-        contents.appended(new Label("Test"))
-        for (h <- v) {
-          if (h.isFlagged) print(flagUnicode)
-          else if (h.isOpened && h.surroundingBombs == 0) print(noSurroundingBombsUnicode)
-          else if (h.isOpened && h.isBomb) printGameOver()
-          else if (h.isOpened && h.surroundingBombs > 0) print((numberPrefixUnicode+h.surroundingBombs-1).toChar.toString)
-          else print(squareUnicode)
-        }
+      listenTo(mouse.clicks)
+      reactions += {
+        case MouseClicked(_, _, c, _, _) => handleFieldClick(j, i, c != 0)
       }
+    })
+  }
+
+  pack()
+  centerOnScreen()
+  open()
+
+  def handleFieldClick(x: Int , y: Int, isRightClick: Boolean) = {
+    controller.selectField((x, y), isRightClick)
   }
 
   private def printGameOver(): Unit = {
@@ -59,7 +43,38 @@ class MswGUI extends MainFrame with Observer{
     println("------------------------------------")
   }
 
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = redrawField(fields)
+  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
+    contents = new GridPanel(9, 9) {
+      contents ++= {
+        for {i <- 0 until x; j <- 0 until y} yield new Button {
+          icon = if(fields(i)(j).isOpened) {
+            if(fields(i)(j).isBomb) {
+              new ImageIcon("src/sprites/bomb.png")
+            } else {
+              if(fields(i)(j).surroundingBombs > 0) {
+                new ImageIcon("src/sprites/" + fields(i)(j).surroundingBombs + ".png")
+              } else {
+                new ImageIcon("src/sprites/empty.png")
+              }
+            }
+          } else {
+            if(fields(i)(j).isFlagged) {
+              new ImageIcon("src/sprites/flag.png")
+            } else {
+              new ImageIcon("src/sprites/block.png")
+            }
+          }
+
+          preferredSize = new Dimension(40, 40)
+
+          listenTo(mouse.clicks)
+          reactions += {
+            case MouseClicked(_, _, c, _, _) => handleFieldClick(j, i, c != 0)
+          }
+        }
+      }
+    }
+  }
 
   override def receiveGameEndUpdate(gameWon: Boolean): Unit = printGameOver()
 }
