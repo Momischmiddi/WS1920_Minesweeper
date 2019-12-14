@@ -22,7 +22,7 @@ class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = D
       fields(y)(x) = newField
 
       if(isGameWon) {
-        fireGameEndEvent(true)
+        fireGameEndEvent(true, fields)
       } else {
         val isGameOver : Boolean = fields(y)(x).isBomb && !flagField
 
@@ -32,11 +32,23 @@ class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = D
         if(!isGameOver) {
           fireFieldChangeEvent(fields)
         } else {
-          fireGameEndEvent(false)
+          openBombFields
+          fireGameEndEvent(false, fields)
         }
       }
 
       true
+    }
+  }
+
+  /**
+   * Used if the game is lost, to show the user where all bombs were
+   */
+  private def openBombFields(): Unit = {
+    for (i <- 0 until difficulty._1; j <- 0 until difficulty._2) {
+      if(fields(j)(i).isBomb) {
+        fields(j)(i) = new Field(i, j, true, false, true, -1);
+      }
     }
   }
 
@@ -94,5 +106,7 @@ class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = D
     Math.abs(original.xLocation - toCompare.xLocation) +
       Math.abs(original.yLocation - toCompare.yLocation)
 
-  private def isGameWon : Boolean = fields.flatten.filter(!_.isBomb).forall(_.isOpened)
+  private def isGameWon : Boolean = {
+    fields.flatten.filter(!_.isBomb).count(_.isOpened) == (difficulty._1 * difficulty._2) - difficulty._3
+  }
 }

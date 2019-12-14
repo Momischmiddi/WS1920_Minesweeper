@@ -25,7 +25,7 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       var evtCounter = 0
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {}
-        override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
+        override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
           if(evtCounter == 0) {
             gameWon should be(true)
           } else {
@@ -46,14 +46,14 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       gameController.selectField((0, 6), false)
       gameController.selectField((5, 4), false)
 
-      observer.receiveGameEndUpdate(false)
+      observer.receiveGameEndUpdate(false, gameField.fields)
     }
 
     "Should be over and lost, if a bomb-field has been opened" in {
       var evtCounter = 0
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {}
-        override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
+        override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
           if(evtCounter == 0) {
             gameWon should be(false)
           } else {
@@ -65,7 +65,7 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
 
       gameField.addGameListener(observer)
       gameController.selectField((0, 4), false)
-      observer.receiveGameEndUpdate(true)
+      observer.receiveGameEndUpdate(true, gameField.fields)
     }
 
     "Should not be over, if there are non-bomb-fields left on the game-field and a non-bomb-field was opened" in {
@@ -82,7 +82,7 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
           evtCounter = evtCounter + 1
         }
 
-        override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
+        override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
           true should be(false) // This method should not be called, since game is not over
         }
       }
@@ -106,7 +106,7 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
           evtCounter = evtCounter + 1
         }
 
-        override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
+        override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
           true should be(false) // This method should not be called, since game is not over
         }
       }
@@ -122,8 +122,8 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
         }
 
-        override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
-          true should be(false) // This method should not be called, since game is not over
+        override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
+          true should be(false) // This method should not be called, since the game is not over
         }
       }
 

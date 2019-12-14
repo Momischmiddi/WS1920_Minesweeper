@@ -18,7 +18,7 @@ class MswGUI(controller: GameController, val gameField: GameField) extends MainF
   title = "Minesweeper"
 
   contents = new GridPanel(9, 9) {
-    contents ++= (for {i <- 0 until x; j <- 0 until y } yield new Button {
+    contents ++= (for {i <- 0 until x; j <- 0 until y } yield new Label {
       icon = new ImageIcon("src/sprites/block.png")
       preferredSize = new Dimension(40, 40)
 
@@ -46,7 +46,7 @@ class MswGUI(controller: GameController, val gameField: GameField) extends MainF
   override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
     contents = new GridPanel(9, 9) {
       contents ++= {
-        for {i <- 0 until x; j <- 0 until y} yield new Button {
+        for {i <- 0 until x; j <- 0 until y} yield new Label {
           icon = if(fields(i)(j).isOpened) {
             if(fields(i)(j).isBomb) {
               new ImageIcon("src/sprites/bomb.png")
@@ -76,6 +76,9 @@ class MswGUI(controller: GameController, val gameField: GameField) extends MainF
     }
   }
 
-  override def receiveGameEndUpdate(gameWon: Boolean): Unit = printGameOver()
+  override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
+    println("GEwonne: " + gameWon);
+    receiveGameFieldUpdate(fields)
+  }
 }
 

@@ -76,7 +76,7 @@ class MswTUI extends Observer {
     field.toString()
   }
 
-  override def receiveGameEndUpdate(gameWon: Boolean): Unit = {
+  override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
     if(gameWon) render(createGameWon()) else render(createGameOver())
     System.exit(0)
   }
