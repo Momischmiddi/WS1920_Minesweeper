@@ -1,65 +1,15 @@
 package view.gui
 
 import controller.GameController
-import javax.swing.ImageIcon
-import model.{Field, GameField}
-import observer.Observer
+import model.GameField
 
-import scala.swing.event.MouseClicked
-import scala.swing.{Dimension, GridPanel, Label}
+import scala.swing.GridPanel
 
-class GameFieldGrid(x: Int, y: Int, controller: GameController, val gameField: GameField) extends GridPanel(x, y) with Observer {
-  gameField.addGameListener(this)
+class GameFieldGrid(controller: GameController, gameField: GameField, mainContainer: MainContainer) extends GridPanel(gameField.difficulty._1, gameField
+.difficulty._2) {
+  contents ++= (for {i <- 0 until gameField.difficulty._1; j <- 0 until gameField.difficulty._2} yield new FieldLabel(i, j, this, gameField.getFieldFromGameField(i, j)))
 
-    contents ++= (for {i <- 0 until x; j <- 0 until y } yield new Label {
-      icon = new ImageIcon("src/sprites/field/block.png")
-      preferredSize = new Dimension(40, 40)
-      name = (i*j).toString
-      listenTo(mouse.clicks)
-      reactions += {
-        case MouseClicked(_, _, c, _, _) => handleFieldClick(j, i, c != 0)
-      }
-    })
-
-
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
-      contents ++= {
-        for {i <- 0 until x; j <- 0 until y} yield new Label {
-          icon = if(fields(i)(j).isOpened) {
-            if(fields(i)(j).isBomb) {
-              new ImageIcon("src/sprites/field/bomb.png")
-            } else {
-              if(fields(i)(j).surroundingBombs > 0) {
-                new ImageIcon("src/sprites/field/" + fields(i)(j).surroundingBombs + ".png")
-              } else {
-                new ImageIcon("src/sprites/field/empty.png")
-              }
-            }
-          } else {
-            if(fields(i)(j).isFlagged) {
-              new ImageIcon("src/sprites/field/flag.png")
-            } else {
-              new ImageIcon("src/sprites/field/block.png")
-            }
-          }
-
-          preferredSize = new Dimension(40, 40)
-
-          listenTo(mouse.clicks)
-          reactions += {
-            case MouseClicked(_, _, c, _, _) => handleFieldClick(j, i, c != 0)
-          }
-        }
-      }
-
-  }
-
-  override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
-    println("GEwonne: " + gameWon);
-    receiveGameFieldUpdate(fields)
-  }
-
-  def handleFieldClick(x: Int , y: Int, isRightClick: Boolean) = {
+  def handleFieldClick(x: Int , y: Int, isRightClick: Boolean): Unit = {
     controller.selectField((x, y), isRightClick)
   }
 }

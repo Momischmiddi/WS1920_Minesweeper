@@ -25,6 +25,7 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       var evtCounter = 0
       val observer = new Observer {
         override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {}
+
         override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
           if(evtCounter == 0) {
             gameWon should be(true)

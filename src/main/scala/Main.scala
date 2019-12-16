@@ -9,12 +9,9 @@ object Main {
     val creator = new GameFieldCreator
     val randomBombs = creator.createRandomBombLocations(Difficulty.Easy)
     val gameField = creator.createGameField(Difficulty.Easy, randomBombs)
-
     val controller = new GameController(gameField)
 
+    val mswTUI = new MswTUI(controller, gameField)
     val mswGUI = new MswGUI(controller, gameField)
-
-    //val mswTUI = new MswTUI
-    //mswTUI.startGame()
   }
 }

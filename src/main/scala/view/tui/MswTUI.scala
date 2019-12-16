@@ -1,13 +1,10 @@
 package view.tui
 
 import controller.GameController
-import model.Difficulty.Difficulty
-import model.{Difficulty, Field, GameField, GameFieldCreator}
+import model.{Field, GameField}
 import observer.Observer
 
-import scala.io.StdIn
-
-class MswTUI extends Observer {
+class MswTUI(controller: GameController, var gameField: GameField) extends Observer {
 
     // Uni-codes for fancy TUI-prints
     val bombUnicode: String = "\uD83D\uDCA3"
@@ -16,69 +13,46 @@ class MswTUI extends Observer {
     val numberPrefixUnicode: Int = 9312
     val noSurroundingBombsUnicode: String = "\u25A1"
 
-  def startGame(): Unit = {
-    println("*******************************************")
-    println("--------- WELCOME TO MINESWEEPER ----------")
-    println("*******************************************")
-    println("\n")
-    println("Choose Difficulty:  (Default: Easy)")
-    println("Easy -> 1")
-    println("Medium -> 2")
-    println("Hard -> 3")
-    val difficulty = StdIn.readInt()
-
-    val bombs, game = difficulty match {
-      case 1 => Difficulty.Easy
-      case 2 => Difficulty.Medium
-      case 3 => Difficulty.Hard
-      case _ => Difficulty.Easy
-    }
-
-    val creator = new GameFieldCreator
-    val randomBombs = creator.createRandomBombLocations(bombs)
-    val gameField = creator.createGameField(game, randomBombs)
     gameField.addGameListener(this)
 
     println("*********************************************")
     println("--------------- GAME START ------------------")
     println("*********************************************")
 
-    val controller = new GameController(gameField)
-
-    while(true){
-      println("\nChoose fields:  x , y")
-      val x = StdIn.readLine("X coordinate: ")
-      val y = StdIn.readLine("y coordinate: ")
-      controller.selectField((x.toInt,y.toInt),false)
-    }
-  }
 
   override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = render(createTUI(fields))
 
   def render(string: String): Unit = {
-    print(string);
+    print(string)
   }
 
   private def createTUI(fields: Array[Array[Field]]): String =
   {
-    val field: StringBuilder = new StringBuilder
-    for (v <- fields) {
-      field.append("\n")
-      for (h <- v) {
-        if (h.isFlagged) field.append(flagUnicode)
-        else if (h.isOpened && h.surroundingBombs == 0) field.append(noSurroundingBombsUnicode)
-        else if (h.isOpened && h.isBomb) {field.clear(); field.append(createGameOver())}
-        else if (h.isOpened && h.surroundingBombs > 0) field.append((numberPrefixUnicode+h.surroundingBombs-1).toChar.toString)
-        else field.append(squareUnicode)
+    val consoleOut: StringBuilder = new StringBuilder
+
+    var ctr = 0
+    for (i <- 0 until gameField.difficulty._1; j <- 0 until gameField.difficulty._2) {
+      val field = gameField.getFieldFromGameField(i, j)
+
+      if(ctr % 9 == 0 && ctr != 0) {
+        consoleOut.append("\n")
       }
+
+      ctr = ctr + 1
+
+      if (field.isFlagged) consoleOut.append(flagUnicode)
+      else if (field.isOpened && field.surroundingBombs == 0) consoleOut.append(noSurroundingBombsUnicode)
+      else if (field.isOpened && field.isBomb) {consoleOut.clear(); consoleOut.append(createGameOver())}
+      else if (field.isOpened && field.surroundingBombs > 0) consoleOut.append((numberPrefixUnicode+field.surroundingBombs-1).toChar.toString)
+      else consoleOut.append(squareUnicode)
     }
 
-    field.toString()
+    consoleOut.append("\n\n")
+    consoleOut.toString()
   }
 
   override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
     if(gameWon) render(createGameWon()) else render(createGameOver())
-    System.exit(0)
   }
 
   private def createGameWon(): String =

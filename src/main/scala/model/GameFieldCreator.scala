@@ -8,7 +8,7 @@ class GameFieldCreator {
 
   def createGameField(difficulty: Difficulty, bombLocations: List[(Int, Int)]): GameField = {
     new GameField(
-      (for {i <- 0 until difficulty._1; j <- 0 until difficulty._2 } yield new Field(j, i, bombLocations contains (j, i)))
+      (for {i <- 0 until difficulty._1; j <- 0 until difficulty._2 } yield new Field(j, i, bombLocations.contains(j, i), false, false, -1, false))
         .grouped(difficulty._1) // Doesnt matter if X or Y, since its quadratic
         .toArray
         .map(_.toArray),

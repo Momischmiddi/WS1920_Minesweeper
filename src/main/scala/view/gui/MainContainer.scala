@@ -1,14 +1,18 @@
 package view.gui
 
 import controller.GameController
-import javax.swing.Box
 import model.GameField
+import observer.Observer
+import view.GameStatus.GameStatus
 
-import scala.swing.{BoxPanel, Button, Orientation}
+import scala.swing.{BoxPanel, Orientation}
+import scala.view.gui.MswGUI
 
-class MainContainer(x: Int, y: Int, controller: GameController, val gameField: GameField) extends BoxPanel(Orientation.Vertical) {
+class MainContainer(controller: GameController, val gameField: GameField, mswFrame: MswGUI, gameStatus: GameStatus) extends BoxPanel(Orientation.Vertical) {
+  def restart(): Unit = {
+    mswFrame.restart()
+  }
 
-  contents += new GameStatusPanel
-  contents += new GameFieldGrid(x, y, controller, gameField)
-
+  contents += new GameStatusPanel(gameStatus, this)
+  contents += new GameFieldGrid(controller, gameField, this)
 }

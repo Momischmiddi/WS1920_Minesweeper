@@ -6,19 +6,22 @@ import scala.swing.{BoxPanel, Dimension, Label, Orientation}
 
 class NumberPanel extends BoxPanel(Orientation.Horizontal) {
 
+  var iconPath = "src/sprites/status/"
+  val labelSize = new Dimension(40, 55)
+
   contents += new Label {
-    preferredSize = new Dimension(40, 55)
-    icon = new ImageIcon("src/sprites/status/0.png")
+    preferredSize = labelSize
+    icon = new ImageIcon(iconPath + "0.png")
   }
 
   contents += new Label {
-    preferredSize = new Dimension(40, 55)
-    icon = new ImageIcon("src/sprites/status/0.png")
+    preferredSize = labelSize
+    icon = new ImageIcon(iconPath + "0.png")
   }
 
   contents += new Label {
-    preferredSize = new Dimension(40, 55)
-    icon = new ImageIcon("src/sprites/status/0.png")
+    preferredSize = labelSize
+    icon = new ImageIcon(iconPath + "0.png")
   }
 
 }
