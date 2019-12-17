@@ -2,10 +2,9 @@ package model
 
 import model.Difficulty.Difficulty
 import observer.Subject
+import view.GameStatus
 
-class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = Difficulty.Easy) extends Subject {
-
-  def fireStartField(): Unit = {fireFieldChangeEvent(fields)}
+class GameField(var fields: Array[Array[Field]],  var difficulty: Difficulty = Difficulty.Easy) extends Subject {
 
   def selectField(x: Int, y: Int, flagField: Boolean): Unit = {
     val selectedField = getFieldFromGameField(x, y)
@@ -33,9 +32,13 @@ class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = D
           openBombFields(x, y)
         }
 
-        fireGameEndEvent(isGameWon, fields)
+        if(isGameWon) {
+          fireFieldChangeEvent(fields, GameStatus.Won)
+        } else {
+          fireFieldChangeEvent(fields, GameStatus.Lost)
+        }
       } else {
-        fireFieldChangeEvent(fields)
+        fireFieldChangeEvent(fields, GameStatus.InProgress)
       }
     }
   }

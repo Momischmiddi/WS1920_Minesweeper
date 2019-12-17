@@ -20,6 +20,7 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
     gameController = gameController_
   }
 
+  /*
   "A game" should {
     "Should be over and won, if all non-bomb-fields have been opened" in {
       var evtCounter = 0
@@ -133,4 +134,5 @@ class ControllerSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       gameController.selectField((0, 4), false)
     }
   }
+  */
 }

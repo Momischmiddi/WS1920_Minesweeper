@@ -1,8 +1,8 @@
 package observer
 
-import model.{Field}
+import model.Field
+import view.GameStatus.GameStatus
 
 trait Observer {
-  def receiveGameFieldUpdate(fields: Array[Array[Field]])
-  def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]])
+  def receiveGameFieldUpdate(fields: Array[Array[Field]], gameStatus: GameStatus)
 }

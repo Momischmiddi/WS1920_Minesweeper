@@ -2,52 +2,34 @@ package scala.view.gui
 
 import controller.GameController
 import javax.swing.ImageIcon
-import model.{Difficulty, Field, GameField, GameFieldCreator}
+import model.Difficulty.Difficulty
+import model.{Difficulty, Field, GameField}
 import observer.Observer
 import view.GameStatus
-import view.gui.MainContainer
+import view.GameStatus.GameStatus
+import view.gui.{MainContainer, Setup}
 
 import scala.swing.MainFrame
 
-class MswGUI(controller: GameController, var gameField: GameField) extends MainFrame with Observer {
-  def restart(): Unit = {
-    val gameFieldCreator = new GameFieldCreator()
-    val bombLocations = gameFieldCreator.createRandomBombLocations(Difficulty.Hard)
-    //val listeners = gameField.getGameListeners()
-
-    gameField = gameFieldCreator.createGameField(Difficulty.Hard, bombLocations)
-    gameField.addGameListener(this)
-    //listeners.foreach(li => gameField.addGameListener(li))
-    contents = new MainContainer(controller, gameField, this, GameStatus.InProgress)
-    pack()
-    centerOnScreen()
+class MswGUI(var controller: GameController, var gameField: GameField, setup: Setup) extends MainFrame with Observer {
+  def restart(difficulty: Difficulty): Unit = {
+    dispose
+    setup.start(difficulty)
   }
 
+  contents = new MainContainer(controller, gameField, this, GameStatus.InProgress)
   gameField.addGameListener(this)
-  title = "Minesweeper"
   resizable = false
   iconImage = new ImageIcon("src/sprites/frameicon.png").getImage
-
-  contents = new MainContainer(controller, gameField, this, GameStatus.InProgress)
-
+  title = "Minesweeper"
   pack()
   centerOnScreen()
   open()
 
   var gameStatus = GameStatus.InProgress
 
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = {
+  override def receiveGameFieldUpdate(fields: Array[Array[Field]], gameStatus: GameStatus): Unit = {
     contents = new MainContainer(controller, gameField, this, gameStatus)
-  }
-
-  override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
-    if(gameWon) {
-      gameStatus = GameStatus.Won
-    } else {
-      gameStatus = GameStatus.Lost
-    }
-
-    receiveGameFieldUpdate(fields)
   }
 }
 

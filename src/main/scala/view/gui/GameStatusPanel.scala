@@ -3,17 +3,17 @@ package view.gui
 import java.awt.Color
 
 import javax.swing.{Box, ImageIcon}
+import model.Difficulty.Difficulty
 import view.GameStatus
 import view.GameStatus.GameStatus
 
 import scala.swing.event.MouseClicked
 import scala.swing.{BoxPanel, Dimension, Label, Orientation}
 
-class GameStatusPanel(gameStatus: GameStatus, mainContainer: MainContainer) extends BoxPanel(Orientation.Horizontal) {
+class GameStatusPanel(gameStatus: GameStatus, mainContainer: MainContainer, difficulty: Difficulty) extends BoxPanel(Orientation.Horizontal) {
 
   background = new Color(192, 192, 192)
-  peer.add(Box.createVerticalStrut(1))
-  contents += new NumberPanel
+
   peer.add(Box.createVerticalStrut(1))
   contents += new Label {
     val spriteName = gameStatus match {
@@ -32,10 +32,8 @@ class GameStatusPanel(gameStatus: GameStatus, mainContainer: MainContainer) exte
   }
 
   peer.add(Box.createVerticalStrut(1))
-  contents += new NumberPanel
-  peer.add(Box.createVerticalStrut(1))
 
   def handleClick(): Unit = {
-    mainContainer.restart()
+    mainContainer.restart(difficulty)
   }
 }

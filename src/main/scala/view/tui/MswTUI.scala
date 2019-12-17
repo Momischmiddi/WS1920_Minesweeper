@@ -3,6 +3,8 @@ package view.tui
 import controller.GameController
 import model.{Field, GameField}
 import observer.Observer
+import view.GameStatus
+import view.GameStatus.GameStatus
 
 class MswTUI(controller: GameController, var gameField: GameField) extends Observer {
 
@@ -19,40 +21,43 @@ class MswTUI(controller: GameController, var gameField: GameField) extends Obser
     println("--------------- GAME START ------------------")
     println("*********************************************")
 
-
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]]): Unit = render(createTUI(fields))
+  override def receiveGameFieldUpdate(fields: Array[Array[Field]], gameStatus: GameStatus): Unit = render(createOutput(fields, gameStatus))
 
   def render(string: String): Unit = {
     print(string)
   }
 
-  private def createTUI(fields: Array[Array[Field]]): String =
+  private def createOutput(fields: Array[Array[Field]], gameStatus: GameStatus): String =
   {
-    val consoleOut: StringBuilder = new StringBuilder
+    if(gameStatus == GameStatus.Won) {
+      createGameWon()
+    } else if(gameStatus == GameStatus.Lost) {
+      createGameOver()
+    } else {
+      val consoleOut: StringBuilder = new StringBuilder
 
-    var ctr = 0
-    for (i <- 0 until gameField.difficulty._1; j <- 0 until gameField.difficulty._2) {
-      val field = gameField.getFieldFromGameField(i, j)
+      var ctr = 0
+      for (i <- 0 until gameField.difficulty._1; j <- 0 until gameField.difficulty._2) {
+        val field = gameField.getFieldFromGameField(i, j)
 
-      if(ctr % 9 == 0 && ctr != 0) {
-        consoleOut.append("\n")
+        if (ctr % gameField.difficulty._1 == 0 && ctr != 0) {
+          consoleOut.append("\n")
+        }
+
+        ctr = ctr + 1
+
+        if (field.isFlagged) consoleOut.append(flagUnicode)
+        else if (field.isOpened && field.surroundingBombs == 0) consoleOut.append(noSurroundingBombsUnicode)
+        else if (field.isOpened && field.isBomb) {
+          consoleOut.clear(); consoleOut.append(createGameOver())
+        }
+        else if (field.isOpened && field.surroundingBombs > 0) consoleOut.append((numberPrefixUnicode + field.surroundingBombs - 1).toChar.toString)
+        else consoleOut.append(squareUnicode)
       }
 
-      ctr = ctr + 1
-
-      if (field.isFlagged) consoleOut.append(flagUnicode)
-      else if (field.isOpened && field.surroundingBombs == 0) consoleOut.append(noSurroundingBombsUnicode)
-      else if (field.isOpened && field.isBomb) {consoleOut.clear(); consoleOut.append(createGameOver())}
-      else if (field.isOpened && field.surroundingBombs > 0) consoleOut.append((numberPrefixUnicode+field.surroundingBombs-1).toChar.toString)
-      else consoleOut.append(squareUnicode)
+      consoleOut.append("\n\n")
+      consoleOut.toString()
     }
-
-    consoleOut.append("\n\n")
-    consoleOut.toString()
-  }
-
-  override def receiveGameEndUpdate(gameWon: Boolean, fields: Array[Array[Field]]): Unit = {
-    if(gameWon) render(createGameWon()) else render(createGameOver())
   }
 
   private def createGameWon(): String =
