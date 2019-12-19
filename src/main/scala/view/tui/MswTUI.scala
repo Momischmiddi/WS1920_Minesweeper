@@ -1,12 +1,11 @@
 package view.tui
 
-import controller.GameController
-import model.{Field, GameField}
-import observer.Observer
-import view.GameStatus
-import view.GameStatus.GameStatus
+import controller.Controller
+import model.GameStatus.GameStatus
+import model.{Field, FieldMatrix, GameStatus, Model}
+import observerpattern.Observer
 
-class MswTUI(controller: GameController, var gameField: GameField) extends Observer {
+class MswTUI(controller: Controller, var model: Model) extends Observer {
 
     // Uni-codes for fancy TUI-prints
     val bombUnicode: String = "\uD83D\uDCA3"
@@ -15,19 +14,21 @@ class MswTUI(controller: GameController, var gameField: GameField) extends Obser
     val numberPrefixUnicode: Int = 9312
     val noSurroundingBombsUnicode: String = "\u25A1"
 
-    gameField.addGameListener(this)
+    model.addGameListener(this)
 
     println("*********************************************")
     println("--------------- GAME START ------------------")
     println("*********************************************")
 
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]], gameStatus: GameStatus): Unit = render(createOutput(fields, gameStatus))
+  override def gameFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus): Unit = {
+    createOutput(fieldMatrix, gameStatus)
+  }
 
   def render(string: String): Unit = {
     print(string)
   }
 
-  private def createOutput(fields: Array[Array[Field]], gameStatus: GameStatus): String =
+  private def createOutput(fieldMatrix: FieldMatrix, gameStatus: GameStatus): String =
   {
     if(gameStatus == GameStatus.Won) {
       createGameWon()
@@ -37,10 +38,10 @@ class MswTUI(controller: GameController, var gameField: GameField) extends Obser
       val consoleOut: StringBuilder = new StringBuilder
 
       var ctr = 0
-      for (i <- 0 until gameField.difficulty._1; j <- 0 until gameField.difficulty._2) {
-        val field = gameField.getFieldFromGameField(i, j)
+      for (i <- 0 until model.difficulty._1; j <- 0 until model.difficulty._2) {
+        val field = fieldMatrix.get(i, j)
 
-        if (ctr % gameField.difficulty._1 == 0 && ctr != 0) {
+        if (ctr % model.difficulty._1 == 0 && ctr != 0) {
           consoleOut.append("\n")
         }
 

@@ -1,20 +1,20 @@
 package view.gui
 
-import controller.GameController
+import controller.Controller
 import model.Difficulty.Difficulty
-import model.GameField
-import observer.Observer
-import view.GameStatus.GameStatus
+import model.GameStatus.GameStatus
+import model.{FieldMatrix, Model}
 
 import scala.swing.{BoxPanel, Orientation}
 import scala.view.gui.MswGUI
 
-class MainContainer(controller: GameController, val gameField: GameField, mswFrame: MswGUI, gameStatus: GameStatus) extends BoxPanel(Orientation.Vertical) {
+class MainContainer(controller: Controller, val model: Model, mswFrame: MswGUI, gameStatus: GameStatus, fieldMatrix: FieldMatrix) extends BoxPanel(Orientation.Vertical) {
+
   def restart(difficulty: Difficulty): Unit = {
     mswFrame.restart(difficulty)
   }
 
-  contents += new GameStatusPanel(gameStatus, this, gameField.difficulty)
-  contents += new GameFieldGrid(controller, gameField, this)
+  contents += new GameStatusPanel(gameStatus, this, model.difficulty)
+  contents += new GameFieldGrid(controller, model, this, fieldMatrix)
   contents += new GameDifficultyPanel(this)
 }

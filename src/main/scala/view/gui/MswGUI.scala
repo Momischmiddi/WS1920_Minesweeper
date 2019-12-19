@@ -1,24 +1,24 @@
 package scala.view.gui
 
-import controller.GameController
+import controller.Controller
 import javax.swing.ImageIcon
 import model.Difficulty.Difficulty
-import model.{Difficulty, Field, GameField}
-import observer.Observer
-import view.GameStatus
-import view.GameStatus.GameStatus
+import model.GameStatus.GameStatus
+import model.{FieldMatrix, GameStatus, Model}
+import observerpattern.Observer
 import view.gui.{MainContainer, Setup}
 
 import scala.swing.MainFrame
 
-class MswGUI(var controller: GameController, var gameField: GameField, setup: Setup) extends MainFrame with Observer {
+class MswGUI(var controller: Controller, var model: Model, setup: Setup, fieldMatrix: FieldMatrix) extends MainFrame with Observer {
+
   def restart(difficulty: Difficulty): Unit = {
     dispose
     setup.start(difficulty)
   }
 
-  contents = new MainContainer(controller, gameField, this, GameStatus.InProgress)
-  gameField.addGameListener(this)
+  contents = new MainContainer(controller, model, this, GameStatus.InProgress, fieldMatrix)
+  model.addGameListener(this)
   resizable = false
   iconImage = new ImageIcon("src/sprites/frameicon.png").getImage
   title = "Minesweeper"
@@ -26,10 +26,8 @@ class MswGUI(var controller: GameController, var gameField: GameField, setup: Se
   centerOnScreen()
   open()
 
-  var gameStatus = GameStatus.InProgress
-
-  override def receiveGameFieldUpdate(fields: Array[Array[Field]], gameStatus: GameStatus): Unit = {
-    contents = new MainContainer(controller, gameField, this, gameStatus)
+  override def gameFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus): Unit = {
+    contents = new MainContainer(controller, model, this, gameStatus, fieldMatrix)
   }
 }
 

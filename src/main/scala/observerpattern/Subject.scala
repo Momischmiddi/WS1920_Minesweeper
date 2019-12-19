@@ -1,7 +1,7 @@
-package observer
+package observerpattern
 
-import model.Field
-import view.GameStatus.GameStatus
+import model.FieldMatrix
+import model.GameStatus.GameStatus
 
 trait Subject {
 
@@ -11,6 +11,6 @@ trait Subject {
   def getGameListeners(): List[Observer] = observers
   def removeGameListener(observer: Observer): Unit= observers = observers diff List(observer)
   def removeAllGameListeners(): Unit = observers = observers.diff(observers)
-  def fireFieldChangeEvent(fields: Array[Array[Field]], gameStatus: GameStatus): Unit = observers.foreach(_.receiveGameFieldUpdate(fields, gameStatus))
+  def fireFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus): Unit = observers.foreach(_.gameFieldUpdated(fieldMatrix, gameStatus))
 
 }

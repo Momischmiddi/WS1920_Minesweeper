@@ -1,22 +1,26 @@
 package view.gui
 
-import controller.GameController
+import controller.Controller
 import model.Difficulty.Difficulty
-import model.{Difficulty, GameFieldCreator}
+import model.{Creator, FieldMatrix, Model}
 import view.tui.MswTUI
 
 import scala.view.gui.MswGUI
 
 class Setup {
 
-  def start(difficulty: Difficulty) = {
-    val creator = new GameFieldCreator
+  def start(difficulty: Difficulty): FieldMatrix = {
+    val creator = new Creator
     val randomBombs = creator.createRandomBombLocations(difficulty)
-    val gameField = creator.createGameField(difficulty, randomBombs)
-    val controller = new GameController(gameField)
+    val fieldMatrix = creator.create(difficulty, randomBombs)
 
-    val mswTUI = new MswTUI(controller, gameField)
-    val mswGUI = new MswGUI(controller, gameField, this)
+    val model = new Model(difficulty)
+    val controller = new Controller(model)
+
+    new MswTUI(controller, model)
+    new MswGUI(controller, model, this, fieldMatrix)
+
+    fieldMatrix
   }
 
 }

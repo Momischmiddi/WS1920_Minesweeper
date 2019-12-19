@@ -1,6 +1,7 @@
 package model
 
 object Difficulty extends Enumeration {
+
   type Difficulty = (Int, Int, Int)
   // X-size, Y-size, Bombamount
   val Easy = (9, 9, 10)

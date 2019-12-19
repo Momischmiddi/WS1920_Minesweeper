@@ -4,8 +4,8 @@ import java.awt.Color
 
 import javax.swing.{Box, ImageIcon}
 import model.Difficulty.Difficulty
-import view.GameStatus
-import view.GameStatus.GameStatus
+import model.GameStatus
+import model.GameStatus.GameStatus
 
 import scala.swing.event.MouseClicked
 import scala.swing.{BoxPanel, Dimension, Label, Orientation}

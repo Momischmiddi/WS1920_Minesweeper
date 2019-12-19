@@ -1,4 +1,4 @@
-package view
+package model
 
 object GameStatus extends Enumeration {
   type GameStatus = Value

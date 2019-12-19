@@ -1,5 +1,13 @@
 package model
 
-class Field(val xLocation: Int, val yLocation: Int, val isBomb: Boolean = false,
-            val isFlagged: Boolean = false, val isOpened: Boolean = false, val surroundingBombs: Int = -1,
-            val isRedBomb: Boolean)
+case class Field(xLocation: Int, yLocation: Int, isBomb: Boolean = false,
+                 isFlagged: Boolean = false, isOpened: Boolean = false,
+                 surroundingBombs: Int = -1, isRedBomb: Boolean) {
+
+  def setBombs(bombAmount: Int): Field = Field(xLocation, yLocation, isBomb, isFlagged, isOpened, bombAmount, isRedBomb)
+
+  def flipFlag(): Field = Field(xLocation, yLocation, isBomb, !isFlagged, false, surroundingBombs, isRedBomb)
+
+  def open(): Field = Field(xLocation, yLocation, isBomb, isFlagged, true, surroundingBombs, isRedBomb)
+
+}
