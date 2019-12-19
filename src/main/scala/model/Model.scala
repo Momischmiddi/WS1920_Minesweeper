@@ -28,7 +28,6 @@ class Model(val difficulty: Difficulty) extends Subject {
         fireFieldUpdated(replaced, GameStatus.Won)
       } else {
         val updated = expand(selectedField, replaced)
-        printMatrix(updated)
         fireFieldUpdated(updated, GameStatus.InProgress)
       }
     } else {
@@ -91,26 +90,6 @@ class Model(val difficulty: Difficulty) extends Subject {
     }
 
     fieldMatrix
-  }
-
-  def printMatrix(fieldMatrix: FieldMatrix): Unit = {
-    for (i <- 0 until 9; j <- 0 until 9) {
-      if(fieldMatrix.get(i, j).isOpened && fieldMatrix.get(i, j).surroundingBombs == 0) {
-        print("O ")
-      } else if(fieldMatrix.get(i, j).surroundingBombs > 0) {
-        print(fieldMatrix.get(i, j).surroundingBombs + " ")
-      } else if(fieldMatrix.get(i, j).isBomb) {
-        print("B ")
-      } else {
-        print("X ")
-      }
-
-      if(j % 8 == 0 && j != 0) {
-        println
-      }
-    }
-
-    println
   }
 
   def ignoreClick(field: Field, flag: Boolean, fields: Vector[Vector[Field]], difficulty: Difficulty) : Boolean =

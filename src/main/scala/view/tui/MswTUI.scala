@@ -16,66 +16,48 @@ class MswTUI(controller: Controller, var model: Model) extends Observer {
 
     model.addGameListener(this)
 
-    println("*********************************************")
-    println("--------------- GAME START ------------------")
-    println("*********************************************")
-
   override def gameFieldUpdated(fieldMatrix: FieldMatrix, gameStatus: GameStatus): Unit = {
-    createOutput(fieldMatrix, gameStatus)
+    render(createHeader(gameStatus))
+    render(createField(fieldMatrix))
   }
 
   def render(string: String): Unit = {
     print(string)
   }
 
-  private def createOutput(fieldMatrix: FieldMatrix, gameStatus: GameStatus): String =
-  {
-    if(gameStatus == GameStatus.Won) {
-      createGameWon()
-    } else if(gameStatus == GameStatus.Lost) {
-      createGameOver()
-    } else {
-      val consoleOut: StringBuilder = new StringBuilder
+  def createHeader(gameStatus: GameStatus): String = {
+    val headerText:StringBuilder = new StringBuilder
 
-      var ctr = 0
-      for (i <- 0 until model.difficulty._1; j <- 0 until model.difficulty._2) {
-        val field = fieldMatrix.get(i, j)
+    headerText.append("\n-------------------------------------------------------\n")
 
-        if (ctr % model.difficulty._1 == 0 && ctr != 0) {
-          consoleOut.append("\n")
-        }
-
-        ctr = ctr + 1
-
-        if (field.isFlagged) consoleOut.append(flagUnicode)
-        else if (field.isOpened && field.surroundingBombs == 0) consoleOut.append(noSurroundingBombsUnicode)
-        else if (field.isOpened && field.isBomb) {
-          consoleOut.clear(); consoleOut.append(createGameOver())
-        }
-        else if (field.isOpened && field.surroundingBombs > 0) consoleOut.append((numberPrefixUnicode + field.surroundingBombs - 1).toChar.toString)
-        else consoleOut.append(squareUnicode)
+    headerText.append(
+      gameStatus match {
+        case GameStatus.Won => "***********************!You won!***********************\n"
+        case GameStatus.Lost => "***********************!You lost!**********************\n"
+        case _=> "*********************** New move **********************\n"
       }
+    )
 
-      consoleOut.append("\n\n")
-      consoleOut.toString()
+    headerText.append("-------------------------------------------------------\n")
+    headerText.toString
+  }
+
+  private def createField(fieldMatrix: FieldMatrix): String = {
+    val fieldText:StringBuilder = new StringBuilder
+
+    for (i <- 0 until model.difficulty._1; j <- 0 until model.difficulty._2) {
+      val field = fieldMatrix.get(j, i)
+
+      if (field.isFlagged) fieldText.append(flagUnicode)
+      else if (field.isOpened && field.surroundingBombs == 0) fieldText.append(noSurroundingBombsUnicode)
+      else if (field.isOpened && field.surroundingBombs > 0) fieldText.append((numberPrefixUnicode + field.surroundingBombs - 1).toChar.toString)
+      else fieldText.append(squareUnicode)
+
+      if(j > 0 && j % (model.difficulty._1-1) == 0) {
+        fieldText.append("\n")
+      }
     }
-  }
 
-  private def createGameWon(): String =
-  {
-    val gameWon:StringBuilder = new StringBuilder
-    gameWon.append("----------------------------------------------------\n")
-    gameWon.append("**************!Congratulations!*********************\n")
-    gameWon.append("*****************!You won!**************************\n")
-    gameWon.append("----------------------------------------------------\n")
-    gameWon.toString()
-  }
-
-  private def createGameOver(): String = {
-    val gameOver:StringBuilder = new StringBuilder
-    gameOver.append("------------------------------------\n")
-    gameOver.append("************!GAME OVER!*************\n")
-    gameOver.append("------------------------------------\n")
-    gameOver.toString()
+    fieldText.toString
   }
 }
