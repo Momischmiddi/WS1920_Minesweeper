@@ -64,13 +64,5 @@ class ModelSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
 
       controller.handleClick(0, 4, fieldMatrix, true)
     }
-
-    "epxand the correct neighbours" in {
-      model.addGameListener((fieldMatrix: FieldMatrix, gameStatus: GameStatus) => {
-
-      })
-
-      controller.handleClick(0, 0, fieldMatrix, false)
-    }
   }
 }
