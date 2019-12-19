@@ -23,7 +23,9 @@ class Model(val difficulty: Difficulty) extends Subject {
     val gameDone = isGameDone(replaced.fields)
     val gameWon = isGameWon(replaced.fields, difficulty)
 
-    if(!gameDone) {
+    if(flag) {
+      fireFieldUpdated(replaced, GameStatus.InProgress)
+    } else if(!gameDone) {
       if(gameWon) {
         fireFieldUpdated(replaced, GameStatus.Won)
       } else {

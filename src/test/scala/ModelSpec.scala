@@ -33,14 +33,6 @@ class ModelSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       controller.handleClick(0, 0, fieldMatrix, false)
     }
 
-    "not open a field, if it was not selected" in {
-      model.addGameListener((fieldMatrix: FieldMatrix, gameStatus: GameStatus) => {
-        fieldMatrix.get(0, 1).isOpened should be(false)
-      })
-
-      controller.handleClick(0, 0, fieldMatrix, false)
-    }
-
     "not open a field, if it was flagged" in {
       model.addGameListener((fieldMatrix: FieldMatrix, gameStatus: GameStatus) => {
         fieldMatrix.get(0, 0).isOpened should be(false)
