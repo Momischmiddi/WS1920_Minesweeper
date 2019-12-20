@@ -7,7 +7,7 @@ class Model(val difficulty: Difficulty) extends Subject {
 
   def update(fieldMatrix: FieldMatrix, flag: Boolean, x: Int, y: Int): Unit = {
     val selectedField = fieldMatrix.get(y, x)
-    
+
     if(!ignoreClick(selectedField, flag, fieldMatrix.fields, difficulty)) {
       val newField = if(flag) {
         selectedField.flipFlag().setBombs(getSurroundingBombAmount(fieldMatrix, x, y))
