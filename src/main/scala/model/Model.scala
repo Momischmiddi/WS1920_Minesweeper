@@ -7,36 +7,38 @@ class Model(val difficulty: Difficulty) extends Subject {
 
   def update(fieldMatrix: FieldMatrix, flag: Boolean, x: Int, y: Int): Unit = {
     val selectedField = fieldMatrix.get(y, x)
-
-    val newField = if(ignoreClick(selectedField, flag, fieldMatrix.fields, difficulty)) {
-      selectedField
-    } else {
-      if(flag) {
+    
+    if(!ignoreClick(selectedField, flag, fieldMatrix.fields, difficulty)) {
+      val newField = if(flag) {
         selectedField.flipFlag().setBombs(getSurroundingBombAmount(fieldMatrix, x, y))
       } else {
         selectedField.open().setBombs(getSurroundingBombAmount(fieldMatrix, x, y))
       }
-    }
 
-    val replaced = fieldMatrix.replaceField(x, y, newField)
+      val replaced = fieldMatrix.replaceField(x, y, newField)
 
-    val gameDone = isGameDone(replaced.fields)
-    val gameWon = isGameWon(replaced.fields, difficulty)
+      val gameDone = isGameDone(replaced.fields)
+      val gameWon = isGameWon(replaced.fields, difficulty)
 
-    if(flag) {
-      fireFieldUpdated(replaced, GameStatus.InProgress)
-    } else if(!gameDone) {
-      if(gameWon) {
-        fireFieldUpdated(replaced, GameStatus.Won)
+      if (flag) {
+        fireFieldUpdated(replaced, GameStatus.InProgress)
+      } else if (!gameDone) {
+        if (gameWon) {
+          fireFieldUpdated(replaced, GameStatus.Won)
+        } else {
+          val updated = expand(selectedField, replaced)
+          if (isGameWon(updated.fields, difficulty)) {
+            fireFieldUpdated(updated, GameStatus.Won)
+          } else {
+            fireFieldUpdated(updated, GameStatus.InProgress)
+          }
+        }
       } else {
-        val updated = expand(selectedField, replaced)
-        fireFieldUpdated(updated, GameStatus.InProgress)
-      }
-    } else {
-      if(gameWon) {
-        fireFieldUpdated(replaced, GameStatus.Won)
-      } else {
-        fireFieldUpdated(replaced, GameStatus.Lost)
+        if (gameWon) {
+          fireFieldUpdated(replaced, GameStatus.Won)
+        } else {
+          fireFieldUpdated(createGameLostField(x, y, replaced), GameStatus.Lost)
+        }
       }
     }
   }
@@ -93,6 +95,14 @@ class Model(val difficulty: Difficulty) extends Subject {
 
     fieldMatrix
   }
+
+  def createGameLostField(x: Int, y: Int, fieldMatrix: FieldMatrix): FieldMatrix =
+    fieldMatrix.fields.flatten.filter(f => f.isBomb)
+      .foldLeft(fieldMatrix)((fieldMatrix, bomb) => fieldMatrix.replaceField(
+      bomb.xLocation, bomb.yLocation, bomb.open()
+    )).replaceField(
+      x, y, Field(x, y, true, false, true, 0, true)
+    )
 
   def ignoreClick(field: Field, flag: Boolean, fields: Vector[Vector[Field]], difficulty: Difficulty) : Boolean =
     field.isOpened || (field.isFlagged && !flag) || isGameDone(fields) || isGameWon(fields, difficulty)
