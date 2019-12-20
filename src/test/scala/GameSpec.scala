@@ -38,6 +38,37 @@ class GameSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
     }
   }
 
+  "A game" should {
+    var moveCtr = 0
+    "be won, if a non bomb field was selected last" in {
+      model.addGameListener((fieldMatrix: FieldMatrix, gameStatus: GameStatus) => {
+        if(moveCtr == 0) {
+          moveCtr += 1
+          controller.handleClick(0, 8, fieldMatrix, false)
+        } else if(moveCtr == 1) {
+          moveCtr += 1
+          controller.handleClick(6, 4, fieldMatrix, false)
+        } else if(moveCtr == 2) {
+          moveCtr += 1
+          controller.handleClick(8, 3, fieldMatrix, false)
+        } else if(moveCtr == 3) {
+          moveCtr += 1
+          controller.handleClick(4, 6, fieldMatrix, false)
+        } else if(moveCtr == 4) {
+          moveCtr += 1
+          controller.handleClick(8, 3, fieldMatrix, false)
+        } else if(moveCtr == 5) {
+          moveCtr += 1
+          controller.handleClick(6, 0, fieldMatrix, false)
+        } else {
+          gameStatus should be(GameStatus.Won)
+        }
+      })
+
+      controller.handleClick(0, 0, fieldMatrix, false)
+    }
+  }
+
   // Tests a full gamecycle
   "A game" should {
     var moveCtr = 0

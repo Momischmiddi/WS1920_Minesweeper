@@ -34,11 +34,7 @@ class Model(val difficulty: Difficulty) extends Subject {
           }
         }
       } else {
-        if (gameWon) {
-          fireFieldUpdated(replaced, GameStatus.Won)
-        } else {
-          fireFieldUpdated(createGameLostField(x, y, replaced), GameStatus.Lost)
-        }
+        fireFieldUpdated(createGameLostField(x, y, replaced), GameStatus.Lost)
       }
     }
   }
@@ -47,12 +43,7 @@ class Model(val difficulty: Difficulty) extends Subject {
     val updatedField = selectedField.open().setBombs(getSurroundingBombAmount(fieldMatrix, selectedField.xLocation, selectedField.yLocation))
     val replacedMatrix = fieldMatrix.replaceField(selectedField.xLocation, selectedField.yLocation, updatedField)
 
-    val neighbours = if(selectedField.surroundingBombs > 0) {
-      getNeighbours(selectedField.yLocation, selectedField.xLocation, replacedMatrix)
-        .filter(f => calculateManhattanDistance(selectedField, f) > 1)
-    } else {
-      getNeighbours(selectedField.yLocation, selectedField.xLocation, replacedMatrix)
-    }
+    val neighbours = getNeighbours(selectedField.yLocation, selectedField.xLocation, replacedMatrix)
 
     val toOpen = neighbours
       .filter(f => !f.isOpened && !f.isBomb)
