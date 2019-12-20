@@ -42,7 +42,7 @@ class MswTUI(controller: Controller, model: Model) extends Observer {
     headerText.toString
   }
 
-  private def createField(fieldMatrix: FieldMatrix): String = {
+  def createField(fieldMatrix: FieldMatrix): String = {
     val fieldText:StringBuilder = new StringBuilder
 
     for (i <- 0 until model.difficulty._1; j <- 0 until model.difficulty._2) {
