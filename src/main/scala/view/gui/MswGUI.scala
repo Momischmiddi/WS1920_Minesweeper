@@ -10,7 +10,7 @@ import view.gui.{MainContainer, Setup}
 
 import scala.swing.MainFrame
 
-class MswGUI(var controller: Controller, var model: Model, setup: Setup, fieldMatrix: FieldMatrix) extends MainFrame with Observer {
+class MswGUI(controller: Controller, model: Model, setup: Setup, fieldMatrix: FieldMatrix) extends MainFrame with Observer {
 
   def restart(difficulty: Difficulty): Unit = {
     dispose

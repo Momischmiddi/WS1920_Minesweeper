@@ -2,10 +2,10 @@ package view.tui
 
 import controller.Controller
 import model.GameStatus.GameStatus
-import model.{Field, FieldMatrix, GameStatus, Model}
+import model.{FieldMatrix, GameStatus, Model}
 import observerpattern.Observer
 
-class MswTUI(controller: Controller, var model: Model) extends Observer {
+class MswTUI(controller: Controller, model: Model) extends Observer {
 
     // Uni-codes for fancy TUI-prints
     val bombUnicode: String = "\uD83D\uDCA3"
