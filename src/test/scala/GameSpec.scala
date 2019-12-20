@@ -31,7 +31,7 @@ class GameSpec extends WordSpec with TestBase with BeforeAndAfterEach  {
         validateOpenBomb(5, 6, fieldMatrix)
         validateOpenBomb(3, 7, fieldMatrix)
 
-        fieldMatrix.get(0, 4).isRedBomb should be(true)
+        fieldMatrix.get(4, 0).isRedBomb should be(true)
       })
 
       controller.handleClick(0, 4, fieldMatrix, false)
