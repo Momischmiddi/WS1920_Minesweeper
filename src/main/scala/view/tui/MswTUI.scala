@@ -44,6 +44,7 @@ class MswTUI extends Observer {
     println("*********************************************")
 
     val controller = new GameController(gameField)
+    controller.startGame()
 
     while(true){
       println("\nChoose fields:  x , y")

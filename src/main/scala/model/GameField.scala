@@ -3,6 +3,7 @@ package model
 import model.Difficulty.Difficulty
 import observer.Subject
 
+//vector
 class GameField(val fields: Array[Array[Field]],  val difficulty: Difficulty = Difficulty.Easy) extends Subject {
 
   def fireStartField(): Unit = {fireFieldChangeEvent(fields)}
