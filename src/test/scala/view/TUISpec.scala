@@ -1,11 +1,13 @@
 package view
 
 import model.GameStatus.GameStatus
-import model.{Field, FieldMatrix, GameStatus}
+import model.{FieldMatrix, GameStatus}
 import org.scalatest.Matchers._
 import org.scalatest.{BeforeAndAfterEach, WordSpec}
 import traits.TestBase
 import view.tui.MswTUI
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 
 class TUISpec extends WordSpec with TestBase with BeforeAndAfterEach  {
 
@@ -71,6 +73,34 @@ class TUISpec extends WordSpec with TestBase with BeforeAndAfterEach  {
       })
 
       controller.handleClick(0, 0, fieldMatrix, false)
+    }
+
+    "print to the console when the model has changed" in {
+      // Pipe stdout to own output
+      val newOut = new ByteArrayOutputStream
+      val oldOut = System.out
+      System.setOut(new PrintStream(newOut))
+
+      tui.gameFieldUpdated(fieldMatrix, GameStatus.InProgress)
+      // Reset to stdout
+      System.setOut(oldOut)
+
+      newOut.toString() should not be ""
+    }
+
+    "print a String to the standard output" in {
+      val testOutput = "TestOutput"
+
+      // Pipe stdout to own output
+      val newOut = new ByteArrayOutputStream
+      val oldOut = System.out
+      System.setOut(new PrintStream(newOut))
+
+      tui.render(testOutput);
+
+      // Reset to stdout
+      System.setOut(oldOut)
+      newOut.toString() should be(testOutput)
     }
   }
 }

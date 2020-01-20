@@ -22,7 +22,7 @@ class MswTUI(controller: Controller, model: Model) extends Observer {
   }
 
   def render(string: String): Unit = {
-    print(string)
+    System.out.print(string)
   }
 
   def createHeader(gameStatus: GameStatus): String = {
